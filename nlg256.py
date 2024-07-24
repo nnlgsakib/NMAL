@@ -25,7 +25,7 @@ def rotr(n, x):
     return (x >> n) | (x << (32 - n)) & 0xFFFFFFFF
 
 
-def NLG_compress(state, block):
+def nlg_compress(state, block):
     W = [0] * 64
     for i in range(16):
         W[i] = struct.unpack('>I', block[i * 4:(i + 1) * 4])[0]
@@ -63,7 +63,8 @@ def NLG_compress(state, block):
     state[6] = (state[6] + g) & 0xFFFFFFFF
     state[7] = (state[7] + h) & 0xFFFFFFFF
 
-def NLG(data):
+
+def nlg256(data):
     data = bytearray(data)
     length = struct.pack('>Q', 8 * len(data))
     data.append(0x80)
@@ -77,12 +78,9 @@ def NLG(data):
     ]
 
     for i in range(0, len(data), 64):
-        NLG_compress(state, data[i:i+64])
+        nlg_compress(state, data[i:i+64])
 
     return ''.join(decimal_to_nlgmal(x) for x in state)
 
-if __name__ == "__main__":
-    # Test the implementation with a sample input
-    test_data = "Hello, NLGmal!"
-    nlg_hash = NLG(test_data.encode())
-    print(f"NLGmal SHA-256 hash: {nlg_hash}")
+
+

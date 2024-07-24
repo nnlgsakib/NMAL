@@ -1,5 +1,24 @@
-from NLGMAL import *
+from nccak  import *
+from nlg256 import *
+from nlgsecp256k1 import *
 
+def genkeypair():
+    priv_key, pub_key = generate_keypair()
+    print(f"Private Key (NLG256): {private_key_to_nlg256(priv_key)}")
+    print(f"Public Key (NLG256): {public_key_to_nlg256(pub_key)}")
+    print(f"Address: {address_from_public_key(pub_key)}")
+
+genkeypair()
+
+# Test the nlg256 with a sample input
+test_data = "yooo"
+nlg_hash = nlg256(test_data.encode())
+print(f"NLGmal nlg-256 hash: {nlg_hash}")
+
+# Test the implementation with a sample input
+test_data = "Hello, NLGmal!"
+nlg_hash = neccak256(test_data.encode())
+print(f"NLGmal Neccak-256 hash: {nlg_hash}")
 
 # Example usage
 decimal_number = int(input("Add some decimal number to convert into NLGDECIMAL: "))
