@@ -1,10 +1,11 @@
 # license: MIT
 # This script implements a custom number system named "NLG DECIMAL" (shortened to "NLGmal").
-# The NLGmal number system uses the characters 0-7 and m-z, making it a base-24 system.
+# The NLGmal number system uses the characters 0-9 and m-z, making it a base-24 system.
 # This script includes functions to convert decimal numbers to NLGmal and vice versa.
 
 # Defining the NLGmal characters
-NLGmal_chars = "01234567mnopqrstuvwxyz"
+NLGmal_chars = "0123456789mnopqrstuvwxyz"
+
 base = len(NLGmal_chars)
 
 # Dictionary for quick look-up of character values
