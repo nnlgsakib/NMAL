@@ -1,73 +1,98 @@
-# secp256k1_nlg.py
-# license: MIT
-# This script implements secp256k1 elliptic curve key pair generation using the custom NLGdecimal number system.
-
 import random
-from nmal import decimal_to_nlgmal
-from neccak import neccak256
+from nmal import *
 
-# secp256k1 curve parameters
-CURVE_P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
-CURVE_A = 0
-CURVE_B = 7
-CURVE_Gx = 0x79BE667EF9DCBBAC55A06295CE870B70A0C6F14F1E8F2F0D5E4E8D0F4D8C8A8
-CURVE_Gy = 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B
-CURVE_N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
-CURVE_H = 1
+# SECP256k1 curve parameters in NLGmal
+P = decimal_to_nlgmal(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F)
+A = decimal_to_nlgmal(0)
+B = decimal_to_nlgmal(7)
+Gx = decimal_to_nlgmal(0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798)
+Gy = decimal_to_nlgmal(0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8)
+N = decimal_to_nlgmal(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141)
 
 def mod_inverse(a, p):
     """Compute the modular inverse of a modulo p."""
-    return pow(a, p - 2, p)
+    lm, hm = 1, 0
+    low, high = a % p, p
+    while low > 1:
+        ratio = high // low
+        nm, new = hm - lm * ratio, high - low * ratio
+        lm, low, hm, high = nm, new, lm, low
+    return lm % p
 
-def point_add(P, Q, curve_p):
-    """Add two points P and Q on the secp256k1 curve."""
-    if P == (0, 0):
+def elliptic_curve_add(P, Q, p):
+    """Elliptic curve point addition."""
+    if P == Q:
+        return elliptic_curve_double(P, p)
+    if P == (None, None):
         return Q
-    if Q == (0, 0):
+    if Q == (None, None):
         return P
-    (x1, y1) = P
-    (x2, y2) = Q
-    if x1 == x2 and y1 != y2:
-        return (0, 0)
-    if x1 == x2:
-        m = (3 * x1 * x1 + CURVE_A) * mod_inverse(2 * y1, curve_p) % curve_p
-    else:
-        m = (y2 - y1) * mod_inverse(x2 - x1, curve_p) % curve_p
-    x3 = (m * m - x1 - x2) % curve_p
-    y3 = (m * (x1 - x3) - y1) % curve_p
-    return (x3, y3)
 
-def scalar_mult(k, point, curve_p):
-    """Multiply a point by a scalar k on the secp256k1 curve."""
-    result = (0, 0)
-    addend = point
+    x1, y1 = nlgmal_to_decimal(P[0]), nlgmal_to_decimal(P[1])
+    x2, y2 = nlgmal_to_decimal(Q[0]), nlgmal_to_decimal(Q[1])
+
+    m = (y2 - y1) * mod_inverse(x2 - x1, p) % p
+    x3 = (m**2 - x1 - x2) % p
+    y3 = (m * (x1 - x3) - y1) % p
+
+    return decimal_to_nlgmal(x3), decimal_to_nlgmal(y3)
+
+def elliptic_curve_double(P, p):
+    """Elliptic curve point doubling."""
+    if P == (None, None):
+        return P
+
+    x1, y1 = nlgmal_to_decimal(P[0]), nlgmal_to_decimal(P[1])
+    a = nlgmal_to_decimal(A)
+
+    m = (3 * x1**2 + a) * mod_inverse(2 * y1, p) % p
+    x3 = (m**2 - 2 * x1) % p
+    y3 = (m * (x1 - x3) - y1) % p
+
+    return decimal_to_nlgmal(x3), decimal_to_nlgmal(y3)
+
+def elliptic_curve_multiply(k, P, p):
+    """Elliptic curve scalar multiplication."""
+    N = P
+    Q = (None, None)
     while k:
         if k & 1:
-            result = point_add(result, addend, curve_p)
-        addend = point_add(addend, addend, curve_p)
+            Q = elliptic_curve_add(Q, N, p)
+        N = elliptic_curve_double(N, p)
         k >>= 1
-    return result
+    return Q
 
-def generate_keypair():
-    """Generate a secp256k1 key pair."""
-    priv_key = random.getrandbits(256) % CURVE_N
-    pub_key = scalar_mult(priv_key, (CURVE_Gx, CURVE_Gy), CURVE_P)
-    return priv_key, pub_key
+def generate_private_key():
+    """Generate a random private key."""
+    return random.getrandbits(256) % nlgmal_to_decimal(N)
 
-def private_key_to_nlg256(priv_key):
-    """Convert a private key to NLG256 format."""
-    return decimal_to_nlgmal(priv_key)
+def generate_public_key(private_key):
+    """Generate the corresponding public key for a given private key."""
+    p = nlgmal_to_decimal(P)
+    G = (Gx, Gy)
+    return elliptic_curve_multiply(private_key, G, p)
 
-def public_key_to_nlg256(pub_key):
-    """Convert a public key to NLG256 format."""
-    x, y = pub_key
-    return decimal_to_nlgmal(x) + decimal_to_nlgmal(y)
+def sign_message(private_key, message):
+    """Sign a message using the private key."""
+    z = int.from_bytes(message, 'big')
+    k = random.getrandbits(256) % nlgmal_to_decimal(N)
+    p = nlgmal_to_decimal(P)
+    G = (Gx, Gy)
+    R = elliptic_curve_multiply(k, G, p)
+    r = nlgmal_to_decimal(R[0]) % nlgmal_to_decimal(N)
+    s = (mod_inverse(k, nlgmal_to_decimal(N)) * (z + r * private_key)) % nlgmal_to_decimal(N)
+    return decimal_to_nlgmal(r), decimal_to_nlgmal(s)
 
-def address_from_public_key(pub_key):
-    """Generate an address from a public key."""
-    pub_key_bytes = pub_key[0].to_bytes(32, 'big') + pub_key[1].to_bytes(32, 'big')
-    hashed_pub_key = neccak256(pub_key_bytes)
-    address = hashed_pub_key[-40:]  # Take the last 20 bytes (40 hex characters)
-    return address
-
-
+def verify_signature(public_key, message, signature):
+    """Verify a message signature."""
+    r, s = nlgmal_to_decimal(signature[0]), nlgmal_to_decimal(signature[1])
+    z = int.from_bytes(message, 'big')
+    w = mod_inverse(s, nlgmal_to_decimal(N))
+    p = nlgmal_to_decimal(P)
+    G = (Gx, Gy)
+    u1 = (z * w) % nlgmal_to_decimal(N)
+    u2 = (r * w) % nlgmal_to_decimal(N)
+    P1 = elliptic_curve_multiply(u1, G, p)
+    P2 = elliptic_curve_multiply(u2, public_key, p)
+    R = elliptic_curve_add(P1, P2, p)
+    return nlgmal_to_decimal(R[0]) % nlgmal_to_decimal(N) == r

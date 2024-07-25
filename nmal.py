@@ -38,3 +38,18 @@ def nlgmal_to_decimal(nlgmal):
     return decimal
 
 
+def bytes_to_nlgdecimal(byte_data):
+    """Convert bytes to an NLGmal string."""
+    # Convert bytes to a decimal number
+    decimal_number = int.from_bytes(byte_data, byteorder='big')
+    # Convert decimal number to NLGmal
+    return decimal_to_nlgmal(decimal_number)
+
+def nlgdecimal_to_bytes(nlgdecimal):
+    """Convert an NLGmal string to bytes."""
+    # Convert NLGmal to decimal number
+    decimal_number = nlgmal_to_decimal(nlgdecimal)
+    # Convert decimal number to bytes
+    # Determine the number of bytes required
+    num_bytes = (decimal_number.bit_length() + 7) // 8
+    return decimal_number.to_bytes(num_bytes, byteorder='big')
