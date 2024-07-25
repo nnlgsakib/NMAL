@@ -1,5 +1,7 @@
-import struct, random
-from NLGMAL import *
+import random
+import struct
+
+from nmal import *
 
 
 def generate_nlgdecimal_constants(size, bit_length=64):

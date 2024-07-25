@@ -1,3 +1,4 @@
+# nmal.py
 # license: MIT
 # This script implements a custom number system named "NLG DECIMAL" (shortened to "NLGmal").
 # The NLGmal number system uses the characters 0-9 and m-z, making it a base-24 system.

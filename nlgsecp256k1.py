@@ -3,8 +3,8 @@
 # This script implements secp256k1 elliptic curve key pair generation using the custom NLGdecimal number system.
 
 import random
-from NLGMAL import decimal_to_nlgmal
-from nccak import neccak256  # Assuming you have neccak256 implemented as in your example
+from nmal import decimal_to_nlgmal
+from neccak import neccak256
 
 # secp256k1 curve parameters
 CURVE_P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F

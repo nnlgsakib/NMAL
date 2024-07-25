@@ -1,7 +1,7 @@
-from nccak  import *
+from nmal import *
+from neccak import *
+from  nlgsecp256k1 import *
 from nlg256 import *
-from nlgsecp256k1 import *
-
 def genkeypair():
     priv_key, pub_key = generate_keypair()
     print(f"Private Key (NLG256): {private_key_to_nlg256(priv_key)}")

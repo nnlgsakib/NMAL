@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/NLGDECIMAL.iml" filepath="$PROJECT_DIR$/.idea/NLGDECIMAL.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/nmal.iml" filepath="$PROJECT_DIR$/.idea/nmal.iml" />
     </modules>
   </component>
 </project>

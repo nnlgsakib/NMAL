@@ -4,7 +4,7 @@
 
 import struct
 import random
-from NLGMAL import *
+from nmal import *
 
 
 def generate_nlgdecimal_constants(size):
@@ -15,6 +15,7 @@ def generate_nlgdecimal_constants(size):
         nlgdecimal_str = decimal_to_nlgmal(value)
         constants.append(nlgdecimal_str)
     return constants
+
 
 # Generate nlg-256 constants dynamically
 K_NLG = generate_nlgdecimal_constants(64)
