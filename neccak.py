@@ -1,26 +1,25 @@
-import random
 import struct
-
 from nmal import *
 
+# SHA-3 (Keccak-256) rotation offsets
+RHO_OFFSETS = [
+    0, 1, 62, 28, 27, 36, 44, 6, 55, 20, 3, 10, 43, 25, 39, 41, 45, 15, 21, 8, 18, 2, 61, 56, 14
+]
 
-def generate_nlgdecimal_constants(size, bit_length=64):
-    """Generate a list of random NLGdecimal constants."""
-    constants = []
-    for _ in range(size):
-        value = random.getrandbits(bit_length)  # Random integer with specified bit length
-        nlgdecimal_str = decimal_to_nlgmal(value)
-        constants.append(nlgdecimal_str)
-    return constants
+# SHA-3 (Keccak-256) round constants
+THETA_CONSTANTS = [
+    0x0000000000000001, 0x0000000000008082, 0x800000000000808A, 0x8000000080008000,
+    0x000000000000808B, 0x0000000080000001, 0x8000000080008081, 0x8000000000008009,
+    0x000000000000008A, 0x0000000000000088, 0x0000000080008009, 0x000000008000000A,
+    0x000000008000808B, 0x800000000000008B, 0x8000000000008089, 0x8000000000008003,
+    0x8000000000008002, 0x8000000000000080, 0x000000000000800A, 0x800000008000000A,
+    0x8000000080008081, 0x8000000000008080, 0x0000000080000001, 0x8000000080008008
+]
 
-def generate_rotation_offsets(size, max_offset):
-    """Generate rotation offsets within a valid range."""
-    return [random.randint(0, max_offset) for _ in range(size)]
-
-# Generate Neccak-256 constants dynamically
-RHO_OFFSETS_NLG = generate_rotation_offsets(24, 63)  # Rho offsets within 0-63 for 64-bit rotations
+# Convert SHA-3 (Keccak-256) constants to NLGdecimal number system
+RHO_OFFSETS_NLG = RHO_OFFSETS
+THETA_NLG = [decimal_to_nlgmal(k) for k in THETA_CONSTANTS]
 PI_NLG = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]  # Linear Pi permutation values
-THETA_NLG = generate_nlgdecimal_constants(24)  # Theta transformation, 24 constants
 
 def rotr(n, x, bits=64):
     """Rotate right."""
