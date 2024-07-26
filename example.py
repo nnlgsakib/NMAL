@@ -51,7 +51,7 @@ key_str = "1000"
 key = key_from_string(key_str)  # Convert to a 256-bit ncryptkey  key
 
 # User-defined data to encrypt
-data = b"Encrypt this data using ncrypt  and NLGmal!"
+data = b"https://ulam2.0.ulamchain.io/"
 
 # Encrypt the data
 encrypted_data, iv = encrypt_data(key, data)
