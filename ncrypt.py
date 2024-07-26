@@ -19,8 +19,16 @@ def decimal_to_bytes(decimals):
     return b''.join(byte_list)
 
 
-def encrypt_data(key, data):
-    """Encrypt data using AES and convert to NLGmal."""
+def key_from_string(key_str):
+    """Convert a string key to a 256-bit AES key."""
+    return hashlib.sha256(key_str.encode()).digest()
+
+
+def encrypt_data(key_str, data):
+    """Encrypt data using AES and convert to NLGmal list."""
+    # Convert key string to a 256-bit AES key
+    key = key_from_string(key_str)
+
     # Generate a random IV
     iv = os.urandom(16)
 
@@ -33,21 +41,34 @@ def encrypt_data(key, data):
     encryptor = cipher.encryptor()
     encrypted_data = encryptor.update(padded_data) + encryptor.finalize()
 
-    # Convert encrypted data to decimal
-    encrypted_decimals = bytes_to_decimal(encrypted_data)
+    # Combine IV and encrypted data
+    combined_data = iv + encrypted_data
 
-    # Convert decimal to NLGmal
-    return [decimal_to_nlgmal(dec) for dec in encrypted_decimals], decimal_to_nlgmal(int.from_bytes(iv, 'big'))
+    # Convert combined data to decimal
+    combined_decimals = bytes_to_decimal(combined_data)
+
+    # Convert decimal to NLGmal and format to plain list
+    encrypted_data_list = [decimal_to_nlgmal(dec) for dec in combined_decimals]
+    return ','.join(encrypted_data_list)
 
 
-def decrypt_data(key, encrypted_data, iv):
+def decrypt_data(key_str, encrypted_data_str):
     """Decrypt NLGmal encrypted data and return the original data."""
+    # Convert key string to a 256-bit AES key
+    key = key_from_string(key_str)
+
+    # Convert the plain list format string to a list of NLGmal strings
+    encrypted_data_list = encrypted_data_str.split(',')
+
     # Convert NLGmal to decimal
-    encrypted_decimals = [nlgmal_to_decimal(dec) for dec in encrypted_data]
-    iv = nlgmal_to_decimal(iv).to_bytes(16, 'big')
+    combined_decimals = [nlgmal_to_decimal(dec) for dec in encrypted_data_list]
 
     # Convert decimal to bytes
-    encrypted_bytes = decimal_to_bytes(encrypted_decimals)
+    combined_bytes = decimal_to_bytes(combined_decimals)
+
+    # Separate IV and encrypted data
+    iv = combined_bytes[:16]
+    encrypted_bytes = combined_bytes[16:]
 
     # AES Decryption
     cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
@@ -59,9 +80,3 @@ def decrypt_data(key, encrypted_data, iv):
     data = unpadder.update(padded_data) + unpadder.finalize()
 
     return data
-
-
-def key_from_string(key_str):
-    """Convert a string key to a 256-bit AES key."""
-    # Hash the string key to ensure it is 256 bits
-    return hashlib.sha256(key_str.encode()).digest()

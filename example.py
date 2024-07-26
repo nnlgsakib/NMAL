@@ -15,8 +15,8 @@ nlg_hash = neccak256(test_data.encode())
 print(f"NLGmal Neccak-256 hash: {nlg_hash}")
 
 # Example usage for conversion functions
-decimal_number = 2348734523487374477
-nlgmal_number = "mn12pos"
+decimal_number = 10000
+nlgmal_number = "t8s"
 
 # Convert decimal to NLGmal
 converted_to_nlgmal = decimal_to_nlgmal(decimal_number)
@@ -44,27 +44,19 @@ is_valid = verify_signature(public_key, message, signature)
 print("Signature valid:", is_valid)
 
 
-#encryption
-
-# User-defined key (must be a string)
+# #encryption
+#
+# Example usage
 key_str = "1000"
-key = key_from_string(key_str)  # Convert to a 256-bit ncryptkey  key
 
 # User-defined data to encrypt
 data = b"NLG"
+print(f"Input Data: {data}")
 
 # Encrypt the data
-encrypted_data, iv = encrypt_data(key, data)
-print(f"Encrypted Data (NLGmal): {encrypted_data}")
-print(f"IV (NLGmal): {iv}")
-
-
-
-#key2 with false pass
-
-key_str = "1000"
-key = key_from_string(key_str)
+encrypted_data_str = encrypt_data(key_str, data)
+print(f"Encrypted Data (Plain List): {encrypted_data_str}")
 
 # Decrypt the data
-decrypted_data = decrypt_data(key, encrypted_data, iv)
+decrypted_data = decrypt_data(key_str, encrypted_data_str)
 print(f"Decrypted Data: {decrypted_data.decode()}")
