@@ -5,12 +5,12 @@ from nlg256 import *
 from ncrypt import *
 
 # Test the nlg256 with a sample input
-test_data = "yooo"
+test_data = "NLG"
 nlg_hash = nlg256(test_data.encode())
 print(f"NLGmal nlg-256 hash: {nlg_hash}")
 
 # Test the Neccak-256 implementation with a sample input
-test_data = "Hello, NLGmal!"
+test_data = "NLG"
 nlg_hash = neccak256(test_data.encode())
 print(f"NLGmal Neccak-256 hash: {nlg_hash}")
 
@@ -35,7 +35,7 @@ public_key = generate_public_key(private_key)
 print("Public Key:", public_key)
 
 # Sign a message
-message = b"Hello, NLG256!"
+message = b"NLG"
 signature = sign_message(private_key, message)
 print("Signature:", signature)
 
@@ -51,12 +51,19 @@ key_str = "1000"
 key = key_from_string(key_str)  # Convert to a 256-bit ncryptkey  key
 
 # User-defined data to encrypt
-data = b"https://ulam2.0.ulamchain.io/"
+data = b"NLG"
 
 # Encrypt the data
 encrypted_data, iv = encrypt_data(key, data)
 print(f"Encrypted Data (NLGmal): {encrypted_data}")
 print(f"IV (NLGmal): {iv}")
+
+
+
+#key2 with false pass
+
+key_str = "1000"
+key = key_from_string(key_str)
 
 # Decrypt the data
 decrypted_data = decrypt_data(key, encrypted_data, iv)
