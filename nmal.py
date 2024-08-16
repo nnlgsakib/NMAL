@@ -29,7 +29,7 @@ def nlgmal_to_decimal(nlgmal):
     """Convert an NLGmal number to a decimal number."""
     # Check for capital letters and issue a warning
     if any(char.isupper() for char in nlgmal):
-        print("Warning: Capital letters detected. Its good to use small small letter. Please be carefull next time :)")
+        print("Warning: Capital letters detected. Its good to use small  letter. Please be carefull next time :)")
         nlgmal = nlgmal.lower()
 
     decimal = 0
